@@ -1,4 +1,3 @@
-import cv2
 from torchvision.datasets import VisionDataset
 # torchvision.datasets.ImageFolder
 import json
@@ -10,7 +9,7 @@ class Herbarium2022(VisionDataset):
         15501 classes 
     '''
     def __init__(self, root, anno_file, transform=None, target_transform = None):
-        super(VisionDataset, self).__init__(root, transform=transform,target_transform=target_transform)
+        super(Herbarium2022, self).__init__(root, transform=transform, target_transform=target_transform)
         self.root_dir = root
         self.transform = transform
         # if target_transform is not None:
@@ -40,8 +39,7 @@ class Herbarium2022(VisionDataset):
             self.catid2catname[category_id] = scientificName
         
         anno_f.close()
-        print('load datasets done !!!')
-        print('dataset len: {}, class nums : {}'.format(self.__len__(), len(self.catid2catname)))
+        print('load datasets done !!!, dataset len: {}, class nums : {}'.format(self.__len__(), len(self.catid2catname)))
     
                 
     def __len__(self):
