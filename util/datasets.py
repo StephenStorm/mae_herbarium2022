@@ -16,12 +16,15 @@ from torchvision import datasets, transforms
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
+from util.Herbarium import Herbarium2022
+
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
 
-    root = os.path.join(args.data_path, 'train' if is_train else 'val')
-    dataset = datasets.ImageFolder(root, transform=transform)
+    root = os.path.join(args.data_path, 'train_images' if is_train else 'valtrain_images')
+    # dataset = datasets.ImageFolder(root, transform=transform)
+    dataset = Herbarium2022(root, transform=transform)
 
     print(dataset)
 

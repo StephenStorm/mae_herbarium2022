@@ -32,14 +32,14 @@ class Herbarium2022(VisionDataset):
         
         #prepare cat_id to cat_name
         categories = anno['categories']
-        self.catid2catname = dict()
+        self.class_to_idx = dict()
         for cat in categories:
             category_id = cat['category_id']
             scientificName = cat['scientificName']
-            self.catid2catname[category_id] = scientificName
+            self.class_to_idx[scientificName] = category_id
         
         anno_f.close()
-        print('load datasets done !!!, dataset len: {}, class nums : {}'.format(self.__len__(), len(self.catid2catname)))
+        print('load datasets done !!!, dataset len: {}, class nums : {}'.format(self.__len__(), len(self.class_to_idx)))
     
                 
     def __len__(self):
