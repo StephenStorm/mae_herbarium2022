@@ -53,9 +53,13 @@ class Herbarium2022(VisionDataset):
 
         image_path = self.root_dir + '/' + sub_folder1 + '/' + sub_folder2 + '/'+ image_id + '.jpg'
         img = self.pil_loader(image_path)
+        # if self.transform is not None:
+        # sample = self.transform(sample)
+        # if self.target_transform is not None:
+        #     target = self.target_transform(target)
         
         if self.transform is not None:
-            img = self.transform(image=img)["image"]
+            img = self.transform(img)
         if self.target_transform is not None :
             label = self.target_transform(label)
             

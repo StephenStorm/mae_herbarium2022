@@ -34,7 +34,7 @@ def parse_args():
 def get_shared_folder() -> Path:
     user = os.getenv("USER")
     if Path("checkpoint/").is_dir():
-        p = Path(f"/opt/tiger/workspace/mae/checkpoint/{user}/experiments")
+        p = Path(f"/opt/tiger/minist/mae_herbarium2022/checkpoint/{user}/experiments")
         p.mkdir(exist_ok=True)
         return p
     raise RuntimeError("No shared folder available")
@@ -102,7 +102,7 @@ def main():
         kwargs['slurm_constraint'] = 'volta32gb'
     if args.comment:
         kwargs['slurm_comment'] = args.comment
-
+    print('num_gpus_per_node : {}'.format(num_gpus_per_node))
     executor.update_parameters(
         mem_gb=40 * num_gpus_per_node,
         gpus_per_node=num_gpus_per_node,
