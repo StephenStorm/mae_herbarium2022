@@ -22,6 +22,8 @@ from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
+import torch.multiprocessing as mp
+
 from util.Herbarium import Herbarium2022
 
 import timm
@@ -39,6 +41,9 @@ from engine_pretrain import train_one_epoch
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE pre-training', add_help=False)
+    # stephen add , anno_file
+    parser.add_argument('--anno_file', default='data/herbarium/train_metadata.json',
+                        help='anno file path')
     parser.add_argument('--batch_size', default=64, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--epochs', default=400, type=int)
@@ -102,6 +107,18 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
+    
+    # copy form submitit_pretrain.py
+
+    parser.add_argument("--ngpus", default=8, type=int, help="Number of gpus to request on each node")
+    parser.add_argument("--nodes", default=1, type=int, help="Number of nodes to request")
+    # parser.add_argument("--timeout", default=4320, type=int, help="Duration of the job")
+    # parser.add_argument("--job_dir", default="", type=str, help="Job dir. Leave empty for automatic.")
+    # parser.add_argument("--anno_file", default="", type=str, help="annotations file path.")
+
+    # parser.add_argument("--partition", default="learnfair", type=str, help="Partition where to submit")
+    parser.add_argument("--use_volta32", action='store_true', help="Request 32G V100 GPUs")
+    parser.add_argument('--comment', default="", type=str, help="Comment to pass to scheduler")
 
     return parser
 
@@ -109,8 +126,8 @@ def get_args_parser():
 def main(args):
     misc.init_distributed_mode(args)
 
-    print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
-    print("{}".format(args).replace(', ', ',\n'))
+    # print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
+    # print("{}".format(args).replace(', ', ',\n'))
 
     device = torch.device(args.device)
 
@@ -129,7 +146,7 @@ def main(args):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
     # dataset_train = datasets.ImageFolder(os.path.join(args.data_path, 'train'), transform=transform_train)
     dataset_train = Herbarium2022(args.data_path, args.anno_file, transform=transform_train)
-    print(dataset_train)
+    # print(dataset_train)
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
@@ -221,4 +238,8 @@ if __name__ == '__main__':
     args = args.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    ngpus_per_node = torch.cuda.device_count()
+    if not torch.cuda.is_available() :
+        print('gpu is not available !!!')
+    
     main(args)
