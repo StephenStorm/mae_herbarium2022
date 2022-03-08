@@ -241,5 +241,17 @@ if __name__ == '__main__':
     ngpus_per_node = torch.cuda.device_count()
     if not torch.cuda.is_available() :
         print('gpu is not available !!!')
-    
+
+    # if args.dist_url == "env://" and args.world_size == -1:
+    #     args.world_size = int(os.environ["WORLD_SIZE"])
+    # args.distributed = args.world_size > 1 
+    '''
+    if True:
+        # Since we have ngpus_per_node processes per node, the total world_size needs to be adjusted accordingly
+        args.world_size = ngpus_per_node * args.world_size
+        # Use torch.multiprocessing.spawn to launch distributed processes: the main_worker process function
+        mp.spawn(main, nprocs=ngpus_per_node, args=(args))
+    else:
+        main(args)
+    '''
     main(args)
